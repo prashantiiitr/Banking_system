@@ -1,19 +1,33 @@
 
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './auth-service.module'
+import { ValidationPipe } from '@nestjs/common';
 
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+
+import { AppModule } from './auth-service.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+    }),
+  );
+
   const config = new DocumentBuilder()
     .setTitle('Auth Service')
-    .setDescription('Banking Auth APIs')
+    .setDescription('Banking Authentication APIs')
     .setVersion('1.0')
+    .addBearerAuth()
     .build();
 
-  const document = SwaggerModule.createDocument(app, config);
+  const document = SwaggerModule.createDocument(
+    app,
+    config,
+  );
 
   SwaggerModule.setup('api', app, document);
 
@@ -21,3 +35,4 @@ async function bootstrap() {
 }
 
 bootstrap();
+
