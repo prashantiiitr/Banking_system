@@ -51,6 +51,36 @@ model LedgerEntry {
   createdAt   DateTime    @default(now())
 }
 
+model Transaction {
+  id                String            @id @default(uuid())
+
+  fromAccountId     String
+
+  toAccountId       String
+
+  amount            Float
+
+  status            TransactionStatus @default(INITIATED)
+
+  description       String?
+
+  idempotencyKey    String            @unique
+
+  createdAt         DateTime          @default(now())
+
+  updatedAt         DateTime          @updatedAt
+}
+
+enum TransactionStatus {
+  INITIATED
+  PROCESSING
+  COMPLETED
+  FAILED
+  ROLLED_BACK
+}
+
+
+
 enum AccountType {
   SAVINGS
   CURRENT
