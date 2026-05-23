@@ -90,3 +90,34 @@ enum EntryType {
   DEBIT
   CREDIT
 }
+
+model Loan {
+  id              String       @id @default(uuid())
+
+  userId          String
+
+  amount          Float
+
+  interestRate    Float
+
+  tenureMonths    Int
+
+  monthlyEmi      Float
+
+  status          LoanStatus   @default(PENDING)
+
+  remainingAmount Float
+
+  createdAt       DateTime     @default(now())
+
+  updatedAt       DateTime     @updatedAt
+}
+
+enum LoanStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  ACTIVE
+  CLOSED
+}
+
