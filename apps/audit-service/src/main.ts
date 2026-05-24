@@ -1,8 +1,20 @@
+
 import { NestFactory } from '@nestjs/core';
-import { AuditServiceModule } from './audit-service.module';
+
+import { AppModule } from './app.module';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AuditServiceModule);
-  await app.listen(process.env.port ?? 3000);
+  const app =
+    await NestFactory.create(AppModule);
+
+  app.enableCors();
+
+  await app.listen(3006);
+
+  console.log(
+    'Audit Service Running on Port 3006',
+  );
 }
+
 bootstrap();
+

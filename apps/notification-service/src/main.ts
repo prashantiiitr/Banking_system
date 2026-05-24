@@ -1,8 +1,20 @@
+
 import { NestFactory } from '@nestjs/core';
-import { NotificationServiceModule } from './notification-service.module';
+
+import { AppModule } from './app.module';
 
 async function bootstrap() {
-  const app = await NestFactory.create(NotificationServiceModule);
-  await app.listen(process.env.port ?? 3000);
+  const app =
+    await NestFactory.create(AppModule);
+
+  app.enableCors();
+
+  await app.listen(3005);
+
+  console.log(
+    'Notification Service Running on Port 3005',
+  );
 }
+
 bootstrap();
+
