@@ -2,6 +2,7 @@
 import { NestFactory } from '@nestjs/core';
 
 import { ValidationPipe } from '@nestjs/common';
+import { proxyMiddleware } from './gateway/middleware/proxy.middleware';
 
 import {
   SwaggerModule,
@@ -15,6 +16,7 @@ async function bootstrap() {
     await NestFactory.create(AppModule);
 
   app.enableCors();
+  app.use(proxyMiddleware);
 
   app.useGlobalPipes(
     new ValidationPipe(),
