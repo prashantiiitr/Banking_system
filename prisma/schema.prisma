@@ -69,7 +69,34 @@ model Transaction {
   createdAt         DateTime          @default(now())
 
   updatedAt         DateTime          @updatedAt
+  transferType TransferType
 }
+
+model Beneficiary {
+  id            String   @id @default(uuid())
+
+  userId        String
+
+  name          String
+
+  bankName      String
+
+  accountNumber String
+
+  ifscCode      String
+
+  isApproved    Boolean  @default(false)
+
+  createdAt     DateTime @default(now())
+}
+
+enum TransferType {
+  IMPS
+  NEFT
+  RTGS
+}
+
+
 
 enum TransactionStatus {
   INITIATED
