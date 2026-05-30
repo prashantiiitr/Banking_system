@@ -1,37 +1,34 @@
-
 import {
+  IsEnum,
   IsNumber,
+  IsOptional,
   IsString,
-  Min,
 } from 'class-validator';
 
-import { ApiProperty } from '@nestjs/swagger';
-
-export class TransferDto {
-  @ApiProperty()
-
-  @IsString()
-
-  fromAccountId: string;
-
-  @ApiProperty()
-
-  @IsString()
-
-  toAccountId: string;
-
-  @ApiProperty()
-
-  @IsNumber()
-
-  @Min(1)
-
-  amount: number;
-
-  @ApiProperty()
-
-  @IsString()
-
-  description: string;
+export enum TransferType {
+  IMPS = 'IMPS',
+  NEFT = 'NEFT',
+  RTGS = 'RTGS',
 }
 
+export class TransferDto {
+  @IsString()
+  fromAccountId: string;
+
+  @IsString()
+  toAccountId: string;
+
+  @IsNumber()
+  amount: number;
+
+  @IsEnum(TransferType)
+  transferType: TransferType;
+
+  @IsOptional()
+  @IsString()
+  remarks?: string;
+
+  @IsOptional()
+  @IsString()
+  description?: string;
+}

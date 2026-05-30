@@ -70,24 +70,32 @@ model Transaction {
 
   updatedAt         DateTime          @updatedAt
   transferType TransferType
+
+  referenceNumber String
+
+  remarks String?
 }
 
 model Beneficiary {
-  id            String   @id @default(uuid())
+  id                  String   @id @default(uuid())
 
-  userId        String
+  userId              String
 
-  name          String
+  name                String
 
-  bankName      String
+  bankName            String
 
-  accountNumber String
+  accountNumber       String
 
-  ifscCode      String
+  ifscCode            String
 
-  isApproved    Boolean  @default(false)
+  isApproved          Boolean  @default(false)
 
-  createdAt     DateTime @default(now())
+  approvedAt          DateTime?
+
+  coolingPeriodEndsAt DateTime?
+
+  createdAt           DateTime @default(now())
 }
 
 enum TransferType {

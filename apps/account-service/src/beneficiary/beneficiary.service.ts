@@ -31,11 +31,22 @@ export class BeneficiaryService {
   }
 
   async approve(id: string) {
+    const coolingPeriod =
+      new Date(
+        Date.now() +
+          30 * 60 * 1000,
+      );
+
     return this.prisma.beneficiary.update({
       where: { id },
 
       data: {
         isApproved: true,
+
+        approvedAt: new Date(),
+
+        coolingPeriodEndsAt:
+          coolingPeriod,
       },
     });
   }

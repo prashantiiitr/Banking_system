@@ -1,4 +1,3 @@
-
 import {
   BadRequestException,
   Injectable,
@@ -8,11 +7,46 @@ import { PrismaService } from '../prisma/prisma.service';
 
 import { randomUUID } from 'crypto';
 
+import { TransferType } from './dto/transfer.dto';
+
 @Injectable()
 export class TransactionService {
   constructor(
     private prisma: PrismaService,
   ) {}
+
+  private validateTransfer(
+    amount: number,
+    transferType: TransferType,
+  ) {
+    if (
+      transferType === TransferType.IMPS &&
+      amount > 500000
+    ) {
+      throw new BadRequestException(
+        'IMPS limit exceeded (5 lakh)',
+      );
+    }
+
+    if (
+      transferType === TransferType.RTGS &&
+      amount < 200000
+    ) {
+      throw new BadRequestException(
+        'RTGS minimum amount is ₹2 lakh',
+      );
+    }
+  }
+
+  private generateReference() {
+    return (
+      'TXN' +
+      Date.now() +
+      Math.floor(
+        Math.random() * 1000,
+      )
+    );
+  }
 
   async transfer(data: any) {
     const sender =
@@ -41,6 +75,11 @@ export class TransactionService {
       );
     }
 
+    this.validateTransfer(
+      data.amount,
+      data.transferType,
+    );
+
     const transaction =
       await this.prisma.transaction.create({
         data: {
@@ -54,6 +93,14 @@ export class TransactionService {
 
           description:
             data.description,
+
+          transferType:
+            data.transferType,
+
+          remarks: data.remarks,
+
+          referenceNumber:
+            this.generateReference(),
 
           idempotencyKey:
             randomUUID(),
@@ -131,6 +178,9 @@ export class TransactionService {
 
         transactionId:
           transaction.id,
+
+        referenceNumber:
+          transaction.referenceNumber,
       };
     } catch (error) {
       await this.prisma.transaction.update({
@@ -157,4 +207,3 @@ export class TransactionService {
     });
   }
 }
-
