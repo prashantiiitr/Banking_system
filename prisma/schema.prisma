@@ -97,6 +97,26 @@ model Beneficiary {
 
   createdAt           DateTime @default(now())
 }
+model OtpVerification {
+  id         String   @id @default(uuid())
+
+  userId     String
+
+  otp        String
+
+  purpose    OtpPurpose
+
+  verified   Boolean @default(false)
+
+  expiresAt  DateTime
+
+  createdAt  DateTime @default(now())
+}
+enum OtpPurpose {
+  LOGIN
+  TRANSFER
+  PASSWORD_RESET
+}
 
 enum TransferType {
   IMPS

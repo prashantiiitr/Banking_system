@@ -1,4 +1,3 @@
-
 import {
   Injectable,
   UnauthorizedException,
@@ -10,6 +9,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 
 import * as bcrypt from 'bcrypt';
+import { BadRequestException } from '@nestjs/common';
 
 @Injectable()
 export class AuthService {
@@ -19,23 +19,17 @@ export class AuthService {
   ) {}
 
   async register(data: any) {
-    const existingUser =
-      await this.prisma.user.findUnique({
-        where: {
-          email: data.email,
-        },
-      });
+    const existingUser = await this.prisma.user.findUnique({
+      where: {
+        email: data.email,
+      },
+    });
 
     if (existingUser) {
-      throw new ConflictException(
-        'Email already exists',
-      );
+      throw new ConflictException('Email already exists');
     }
 
-    const hashedPassword = await bcrypt.hash(
-      data.password,
-      10,
-    );
+    const hashedPassword = await bcrypt.hash(data.password, 10);
 
     const user = await this.prisma.user.create({
       data: {
@@ -51,29 +45,20 @@ export class AuthService {
   }
 
   async login(data: any) {
-    const user =
-      await this.prisma.user.findUnique({
-        where: {
-          email: data.email,
-        },
-      });
+    const user = await this.prisma.user.findUnique({
+      where: {
+        email: data.email,
+      },
+    });
 
     if (!user) {
-      throw new UnauthorizedException(
-        'Invalid credentials',
-      );
+      throw new UnauthorizedException('Invalid credentials');
     }
 
-    const isPasswordValid =
-      await bcrypt.compare(
-        data.password,
-        user.password,
-      );
+    const isPasswordValid = await bcrypt.compare(data.password, user.password);
 
     if (!isPasswordValid) {
-      throw new UnauthorizedException(
-        'Invalid credentials',
-      );
+      throw new UnauthorizedException('Invalid credentials');
     }
 
     const payload = {
@@ -82,15 +67,13 @@ export class AuthService {
       role: user.role,
     };
 
-    const accessToken =
-      this.jwtService.sign(payload, {
-        expiresIn: '15m',
-      });
+    const accessToken = this.jwtService.sign(payload, {
+      expiresIn: '15m',
+    });
 
-    const refreshToken =
-      this.jwtService.sign(payload, {
-        expiresIn: '7d',
-      });
+    const refreshToken = this.jwtService.sign(payload, {
+      expiresIn: '7d',
+    });
 
     await this.prisma.user.update({
       where: {
@@ -109,23 +92,16 @@ export class AuthService {
 
   async refreshToken(token: string) {
     try {
-      const decoded =
-        this.jwtService.verify(token);
+      const decoded = this.jwtService.verify(token);
 
-      const user =
-        await this.prisma.user.findUnique({
-          where: {
-            id: decoded.sub,
-          },
-        });
+      const user = await this.prisma.user.findUnique({
+        where: {
+          id: decoded.sub,
+        },
+      });
 
-      if (
-        !user ||
-        user.refreshToken !== token
-      ) {
-        throw new UnauthorizedException(
-          'Invalid refresh token',
-        );
+      if (!user || user.refreshToken !== token) {
+        throw new UnauthorizedException('Invalid refresh token');
       }
 
       const payload = {
@@ -134,18 +110,15 @@ export class AuthService {
         role: user.role,
       };
 
-      const accessToken =
-        this.jwtService.sign(payload, {
-          expiresIn: '15m',
-        });
+      const accessToken = this.jwtService.sign(payload, {
+        expiresIn: '15m',
+      });
 
       return {
         accessToken,
       };
     } catch {
-      throw new UnauthorizedException(
-        'Invalid refresh token',
-      );
+      throw new UnauthorizedException('Invalid refresh token');
     }
   }
   async logout(userId: string) {
@@ -163,6 +136,32 @@ export class AuthService {
       message: 'Logged out successfully',
     };
   }
+  async forgotPassword(email: string) {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        email,
+      },
+    });
 
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
+
+    return {
+      message: 'Password reset OTP sent',
+    };
+  }
+  async resetPassword(email: string, password: string) {
+    const hash = await bcrypt.hash(password, 10);
+
+    return this.prisma.user.update({
+      where: {
+        email,
+      },
+
+      data: {
+        password: hash,
+      },
+    });
+  }
 }
-

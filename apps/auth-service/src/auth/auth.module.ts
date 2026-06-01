@@ -12,6 +12,8 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { PrismaModule } from '../prisma/prisma.module';
 import { RedisModule } from '../redis/redis.module';
 import {ThrottlerModule,} from '@nestjs/throttler';
+import { OtpModule } from '../otp/otp.module';
+import { MailModule } from '../mail/mail.module';
 
 @Module({
   imports: [
@@ -19,7 +21,8 @@ import {ThrottlerModule,} from '@nestjs/throttler';
 
     PassportModule,
     RedisModule,
-    
+    OtpModule,
+    MailModule,
     ThrottlerModule.forRoot([
       {
         ttl: 60000,
