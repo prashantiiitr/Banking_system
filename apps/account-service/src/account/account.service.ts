@@ -73,4 +73,11 @@ export class AccountService {
       },
     });
   }
+  async getPendingAccounts() {
+  return this.prisma.account.findMany({
+    where: {
+      status: 'PENDING',
+    },
+  });
+}
 }

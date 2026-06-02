@@ -41,4 +41,8 @@ export class AccountController {
   ) {
     return this.accountService.rejectAccount(id);
   }
+  @Get('pending')
+  getPendingAccounts() {
+    return this.accountService.getPendingAccounts();
+  }
 }
