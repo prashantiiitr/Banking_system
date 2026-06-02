@@ -34,6 +34,7 @@ model Account {
   balance       Float         @default(0)
   currency      String        @default("INR")
   type          AccountType
+  status        AccountStatus @default(PENDING)
   userId        String
   user          User          @relation(fields: [userId], references: [id])
   ledgerEntries LedgerEntry[]
@@ -112,6 +113,36 @@ model OtpVerification {
 
   createdAt  DateTime @default(now())
 }
+
+model KYC {
+  id          String @id @default(uuid())
+
+  userId      String
+
+  panNumber   String
+
+  aadhaar     String
+
+  address     String
+
+  status      KycStatus @default(PENDING)
+
+  createdAt   DateTime @default(now())
+}
+
+model Nominee {
+  id          String @id @default(uuid())
+
+  accountId   String
+
+  name        String
+
+  relation    String
+
+  phone       String
+
+  createdAt   DateTime @default(now())
+}
 enum OtpPurpose {
   LOGIN
   TRANSFER
@@ -134,7 +165,11 @@ enum TransactionStatus {
   ROLLED_BACK
 }
 
-
+enum KycStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+}
 
 enum AccountType {
   SAVINGS
@@ -176,3 +211,8 @@ enum LoanStatus {
   CLOSED
 }
 
+enum AccountStatus {
+  PENDING
+  ACTIVE
+  REJECTED
+}

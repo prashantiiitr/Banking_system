@@ -3,39 +3,29 @@ import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class AccountService {
-  constructor(
-    private prisma: PrismaService,
-  ) {}
+  constructor(private prisma: PrismaService) {}
 
   generateAccountNumber() {
-    return Math.floor(
-      1000000000 + Math.random() * 9000000000,
-    ).toString();
+    return Math.floor(1000000000 + Math.random() * 9000000000).toString();
   }
 
-  async createAccount(
-    userId: string,
-    data: any,
-  ) {
-    const account =
-      await this.prisma.account.create({
-        data: {
-          accountNumber:
-            this.generateAccountNumber(),
+  async createAccount(userId: string, data: any) {
+    const account = await this.prisma.account.create({
+      data: {
+        accountNumber: this.generateAccountNumber(),
 
-          type: data.type,
+        type: data.type,
 
-          currency: data.currency,
+        currency: data.currency,
 
-          userId,
+        userId,
 
-          balance: 0,
-        },
-      });
+        balance: 0,
+      },
+    });
 
     return {
-      message:
-        'Account created successfully',
+      message: 'Account created successfully',
 
       account,
     };
@@ -57,6 +47,29 @@ export class AccountService {
 
       orderBy: {
         createdAt: 'desc',
+      },
+    });
+  }
+  async approveAccount(id: string) {
+    return this.prisma.account.update({
+      where: {
+        id,
+      },
+
+      data: {
+        status: 'ACTIVE',
+      },
+    });
+  }
+
+  async rejectAccount(id: string) {
+    return this.prisma.account.update({
+      where: {
+        id,
+      },
+
+      data: {
+        status: 'REJECTED',
       },
     });
   }
