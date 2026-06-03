@@ -6,6 +6,8 @@ import { ConfigModule } from '@nestjs/config';
 import { AccountModule } from './account/account.module';
 import { NomineeModule } from './nominee/nominee.module';
 import { KycModule } from './kyc/kyc.module';
+import { ChequeModule } from './cheque/cheque.module';
+import { FraudModule } from './fraud/fraud.module';
 
 @Module({
   imports: [
@@ -15,7 +17,9 @@ import { KycModule } from './kyc/kyc.module';
 
     AccountModule,
     NomineeModule,
-    KycModule
+    KycModule,
+    ChequeModule,
+    FraudModule
   ],
 })
 export class AppModule {}

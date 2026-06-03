@@ -1,48 +1,24 @@
-import {
-  BadRequestException,
-  Injectable,
-} from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class LoanService {
-  constructor(
-    private prisma: PrismaService,
-  ) {}
+  constructor(private prisma: PrismaService) {}
 
-  calculateEMI(
-    principal: number,
-    annualRate: number,
-    tenureMonths: number,
-  ) {
-    const monthlyRate =
-      annualRate / 12 / 100;
+  calculateEMI(principal: number, annualRate: number, tenureMonths: number) {
+    const monthlyRate = annualRate / 12 / 100;
 
     const emi =
-      (principal *
-        monthlyRate *
-        Math.pow(
-          1 + monthlyRate,
-          tenureMonths,
-        )) /
-      (Math.pow(
-        1 + monthlyRate,
-        tenureMonths,
-      ) -
-        1);
+      (principal * monthlyRate * Math.pow(1 + monthlyRate, tenureMonths)) /
+      (Math.pow(1 + monthlyRate, tenureMonths) - 1);
 
     return Number(emi.toFixed(2));
   }
 
-  async applyLoan(
-    userId: string,
-    data: any,
-  ) {
+  async applyLoan(userId: string, data: any) {
     if (data.amount > 1000000) {
-      throw new BadRequestException(
-        'Loan amount exceeds limit',
-      );
+      throw new BadRequestException('Loan amount exceeds limit');
     }
 
     const emi = this.calculateEMI(
@@ -51,31 +27,26 @@ export class LoanService {
       data.tenureMonths,
     );
 
-    const loan =
-      await this.prisma.loan.create({
-        data: {
-          userId,
+    const loan = await this.prisma.loan.create({
+      data: {
+        userId,
 
-          amount: data.amount,
+        amount: data.amount,
 
-          interestRate:
-            data.interestRate,
+        interestRate: data.interestRate,
 
-          tenureMonths:
-            data.tenureMonths,
+        tenureMonths: data.tenureMonths,
 
-          monthlyEmi: emi,
+        monthlyEmi: emi,
 
-          remainingAmount:
-            data.amount,
+        remainingAmount: data.amount,
 
-          status: 'APPROVED',
-        },
-      });
+        status: 'APPROVED',
+      },
+    });
 
     return {
-      message:
-        'Loan approved successfully',
+      message: 'Loan approved successfully',
 
       monthlyEmi: emi,
 
@@ -90,5 +61,28 @@ export class LoanService {
       },
     });
   }
-}
+  async approveLoan(id: string, managerId: string) {
+    return this.prisma.loan.update({
+      where: { id },
 
+      data: {
+        status: 'ACTIVE',
+
+        approvedAt: new Date(),
+
+        approvedBy: managerId,
+
+        nextEmiDate: new Date(),
+      },
+    });
+  }
+  async rejectLoan(id: string) {
+    return this.prisma.loan.update({
+      where: { id },
+
+      data: {
+        status: 'REJECTED',
+      },
+    });
+  }
+}

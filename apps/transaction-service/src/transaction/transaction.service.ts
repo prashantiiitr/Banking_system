@@ -36,6 +36,7 @@ export class TransactionService {
         'RTGS minimum amount is ₹2 lakh',
       );
     }
+    
   }
 
   private generateReference() {

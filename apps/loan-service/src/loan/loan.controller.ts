@@ -4,6 +4,8 @@ import {
   Get,
   Post,
   Req,
+  Patch,
+  Param
 } from '@nestjs/common';
 
 import { LoanService } from './loan.service';
@@ -37,5 +39,24 @@ export class LoanController {
         'temporary-user-id',
     );
   }
+  @Patch(':id/approve')
+approve(
+  @Param('id') id: string,
+  @Body() body: any,
+) {
+  return this.loanService.approveLoan(
+    id,
+    body.managerId,
+  );
+}
+
+@Patch(':id/reject')
+reject(
+  @Param('id') id: string,
+) {
+  return this.loanService.rejectLoan(
+    id,
+  );
+}
 }
 

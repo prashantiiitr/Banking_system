@@ -198,11 +198,51 @@ model Loan {
 
   remainingAmount Float
 
+  approvedAt      DateTime?
+
+  approvedBy      String?
+
+  nextEmiDate     DateTime?
+
   createdAt       DateTime     @default(now())
 
   updatedAt       DateTime     @updatedAt
 }
 
+model Cheque {
+  id             String       @id @default(uuid())
+
+  accountId      String
+
+  chequeNumber   String       @unique
+
+  amount         Float
+
+  payeeName      String
+
+  status         ChequeStatus @default(PENDING)
+
+  createdAt      DateTime     @default(now())
+}
+
+model FraudAlert {
+  id          String   @id @default(uuid())
+
+  accountId   String
+
+  reason      String
+
+  resolved    Boolean  @default(false)
+
+  createdAt   DateTime @default(now())
+}
+
+enum ChequeStatus {
+  PENDING
+  CLEARED
+  BOUNCED
+  STOPPED
+}
 enum LoanStatus {
   PENDING
   APPROVED
