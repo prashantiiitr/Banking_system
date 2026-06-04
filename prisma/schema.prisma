@@ -236,6 +236,15 @@ model FraudAlert {
 
   createdAt   DateTime @default(now())
 }
+model AuditLog {
+  id          String   @id @default(uuid())
+
+  action      String
+
+  entityId    String
+
+  createdAt   DateTime @default(now())
+}
 
 enum ChequeStatus {
   PENDING
