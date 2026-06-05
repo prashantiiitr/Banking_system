@@ -41,12 +41,12 @@ export class LoanService {
 
         remainingAmount: data.amount,
 
-        status: 'APPROVED',
+        status: 'PENDING',
       },
     });
 
     return {
-      message: 'Loan approved successfully',
+      message: 'Loan application submitted successfully',
 
       monthlyEmi: emi,
 
@@ -85,4 +85,5 @@ export class LoanService {
       },
     });
   }
+  
 }
