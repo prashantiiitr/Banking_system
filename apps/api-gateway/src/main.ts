@@ -1,54 +1,38 @@
-
 import { NestFactory } from '@nestjs/core';
 
 import { ValidationPipe } from '@nestjs/common';
 import { proxyMiddleware } from './gateway/middleware/proxy.middleware';
 
-import {
-  SwaggerModule,
-  DocumentBuilder,
-} from '@nestjs/swagger';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 import { AppModule } from './app.module';
 
 async function bootstrap() {
-  const app =
-    await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule);
 
-  app.enableCors();
+  app.enableCors({
+    origin: 'http://localhost:5173',
+
+    credentials: true,
+  });
+
   app.use(proxyMiddleware);
 
-  app.useGlobalPipes(
-    new ValidationPipe(),
-  );
+  app.useGlobalPipes(new ValidationPipe());
 
-  const config =
-    new DocumentBuilder()
-      .setTitle('API Gateway')
-      .setDescription(
-        'Central Banking Gateway',
-      )
-      .setVersion('1.0')
-      .build();
+  const config = new DocumentBuilder()
+    .setTitle('API Gateway')
+    .setDescription('Central Banking Gateway')
+    .setVersion('1.0')
+    .build();
 
-  const document =
-    SwaggerModule.createDocument(
-      app,
-      config,
-    );
+  const document = SwaggerModule.createDocument(app, config);
 
-  SwaggerModule.setup(
-    'api',
-    app,
-    document,
-  );
+  SwaggerModule.setup('api', app, document);
 
-  await app.listen(3000);
+  await app.listen(4010);
 
-  console.log(
-    'API Gateway Running on Port 3000',
-  );
+  console.log('API Gateway Running on Port 3000');
 }
 
 bootstrap();
-
