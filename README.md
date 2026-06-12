@@ -101,4 +101,4 @@ readme.md // no changes today i was out of station
 DONE // Testing in progress
 1st phase testing done need some improvement and changes
 frontend testing in progress
-// no prgress today
+// some errors spotted thinhking of approach to fix it..
